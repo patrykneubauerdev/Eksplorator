@@ -268,7 +268,7 @@ class FirestoreService: ObservableObject {
                 try await userRef.setData(userData, merge: true)
             }
         } catch {
-            print("Błąd podczas aktualizacji ulubionych urbexów: \(error.localizedDescription)")
+            print("Error when updating urbex favorites: \(error.localizedDescription)")
             throw error
         }
     }

@@ -45,7 +45,7 @@ struct PrivacyPolicyView: View {
                     
                     Text("Your data is securely stored using Firebase and Google Cloud services. If you wish to delete your account, you can do so in the app settings. However, urbex locations you added will remain visible in the app.")
                     
-                    // Nowa sekcja o zakazanych treściach
+                  
                     Text("Prohibited Content & Policy Enforcement")
                         .font(.headline)
                         .padding(.top, 10)

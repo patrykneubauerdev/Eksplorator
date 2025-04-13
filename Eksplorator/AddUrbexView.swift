@@ -78,7 +78,7 @@ struct AddUrbexView: View {
                             HStack(spacing: 16) {
                                 AsyncImage(url: URL(string: urbex.imageURL)) { phase in
                                     switch phase {
-                                        // Empty case remains the same
+                                      
                                     case .empty:
                                         ShimmerEffectView()
                                             .frame(width: 60, height: 60)
@@ -128,7 +128,7 @@ struct AddUrbexView: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                     
                                     HStack(alignment: .center, spacing: 4) {
-                                        // City name with building icon
+                                    
                                         HStack(spacing: 4) {
                                             Image(systemName: "building.2")
                                                 .font(.system(size: 10))

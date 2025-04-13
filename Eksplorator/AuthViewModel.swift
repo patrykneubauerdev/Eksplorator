@@ -62,11 +62,11 @@ class AuthViewModel: ObservableObject {
         
         db.collection("users").document(userId).getDocument { [weak self] document, error in
             if let error = error {
-                print("Błąd podczas sprawdzania użytkownika: \(error.localizedDescription)")
+                print("Error during user verification: \(error.localizedDescription)")
                 self?.userSession = nil
                 self?.currentUser = nil
             } else if document?.exists == false {
-                // Użytkownik został usunięty z Firestore, wylogowanie
+             
                 self?.userSession = nil
                 self?.currentUser = nil
             }
@@ -98,7 +98,7 @@ class AuthViewModel: ObservableObject {
         let currentCount = dailyUrbexAdditions[today] ?? 0
         dailyUrbexAdditions[today] = currentCount + 1
         
-        // Update this in Firestore
+    
         updateDailyUrbexCountInFirestore()
     }
     
@@ -108,26 +108,26 @@ class AuthViewModel: ObservableObject {
          let db = Firestore.firestore()
          
          do {
-             // Query Firestore for device registration count
+           
              let snapshot = try await db.collection("devices")
                  .document(deviceID)
                  .getDocument()
              
              if let data = snapshot.data(), let count = data["accountCount"] as? Int {
-                 // Check if device has reached the limit (3 accounts)
+               
                  return count < 3
              } else {
-                 // Device not registered yet, so it's below the limit
+             
                  return true
              }
          } catch {
              print("Error checking device limit: \(error.localizedDescription)")
-             // In case of error, allow registration but log the error
+         
              return true
          }
      }
     
-    // Register device when creating a new account
+   
      func registerDeviceForAccount() async {
          let deviceID = DeviceIdentifier.getDeviceIdentifier()
          let db = Firestore.firestore()
@@ -140,7 +140,7 @@ class AuthViewModel: ObservableObject {
                  // Increment account count
                  try await docRef.updateData(["accountCount": count + 1])
              } else {
-                 // Create new device entry
+               
                  try await docRef.setData([
                      "deviceID": deviceID,
                      "accountCount": 1,
@@ -154,17 +154,17 @@ class AuthViewModel: ObservableObject {
     
     
     func createUserWithDeviceLimit(withEmail email: String, password: String, username: String) async throws {
-        // First check if device has reached the limit
+      
         let canRegister = try await checkDeviceAccountLimit()
         
         guard canRegister else {
             throw AuthError.deviceLimitReached
         }
         
-        // Continue with normal user creation
+ 
         try await createUser(withEmail: email, password: password, username: username)
         
-        // Register this device for the new account
+    
         await registerDeviceForAccount()
     }
    
@@ -203,7 +203,7 @@ class AuthViewModel: ObservableObject {
             
             await fetchUser()
         } catch {
-            print("Błąd podczas aktualizacji ulubionych: \(error.localizedDescription)")
+            print("Error while updating favorites: \(error.localizedDescription)")
         }
     }
     
@@ -226,7 +226,7 @@ class AuthViewModel: ObservableObject {
             
             var encodedUser = try Firestore.Encoder().encode(user)
             
-            // Add the daily urbex additions field
+         
             let dailyAdditions: [String: Int] = [:]
             encodedUser["dailyUrbexAdditions"] = dailyAdditions
             
@@ -325,14 +325,14 @@ class AuthViewModel: ObservableObject {
                     username: data["username"] as? String ?? "",
                     email: data["email"] as? String ?? "",
                     favoriteUrbexes: data["favoriteUrbexes"] as? [String] ?? [],
-                    urbexes: data["urbexes"] as? [String] ?? [] //was ''favoriteUrbexess''
+                    urbexes: data["urbexes"] as? [String] ?? []
                 )
                 
-                // Get daily urbex additions
+              
                 self.dailyUrbexAdditions = data["dailyUrbexAdditions"] as? [String: Int] ?? [:]
             }
         } catch {
-            print("Błąd pobierania użytkownika: \(error.localizedDescription)")
+            print("User fetch error: \(error.localizedDescription)")
         }
     }
     

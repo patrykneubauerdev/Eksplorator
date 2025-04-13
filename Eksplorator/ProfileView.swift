@@ -216,7 +216,7 @@ struct ProfileView: View {
                                 VStack {
                                     HStack {
                                         Spacer()
-                                        Text("Version 0.9.0 Beta")
+                                        Text("Version 1.0.0")
                                             .font(.footnote)
                                             .foregroundStyle(.gray)
                                         

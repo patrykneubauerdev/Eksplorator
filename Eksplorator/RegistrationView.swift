@@ -154,7 +154,7 @@ struct RegistrationView: View {
                             isSecureField: true,
                             submitLabel: .done
                         ) {
-                            focusedField = nil // Zamknięcie klawiatury
+                            focusedField = nil
                         }
                         .focused($focusedField, equals: .confirmPassword)
                         
@@ -167,7 +167,7 @@ struct RegistrationView: View {
                         }
                     }
                     
-                    // Terms and Conditions Checkbox
+                  
                     HStack(alignment: .center, spacing: 10) {
                         Button(action: {
                             acceptedTerms.toggle()

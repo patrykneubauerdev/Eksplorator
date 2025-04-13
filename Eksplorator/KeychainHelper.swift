@@ -8,7 +8,7 @@
 import Foundation
 import Security
 
-// KeychainHelper for securely storing the device identifier
+
 class KeychainHelper {
     static func save(_ data: Any, key: String) {
         guard let data = (data as? String)?.data(using: .utf8) else { return }
@@ -19,10 +19,10 @@ class KeychainHelper {
             kSecValueData as String: data
         ]
         
-        // First try to delete any existing key
+       
         SecItemDelete(query as CFDictionary)
         
-        // Then add the new key
+    
         SecItemAdd(query as CFDictionary, nil)
     }
     

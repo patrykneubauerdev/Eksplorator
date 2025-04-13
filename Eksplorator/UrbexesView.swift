@@ -16,12 +16,12 @@ struct UrbexesView: View {
     @State private var isActive: Bool = false
     @State private var imageLoadTriggers: [String: UUID] = [:]
     
-    // States for filtering and searching
+  
     @State private var searchText = ""
     @State private var sortOption: SortOption = .newest
     @State private var isShowingFilterMenu = false
     
-    // Enum for sorting options
+    
     enum SortOption: String, CaseIterable {
         case newest = "Newest"
         case mostLikes = "Most likes"
@@ -74,11 +74,11 @@ struct UrbexesView: View {
                     }
                 
                 VStack(spacing: 0) {
-                    // Adding some extra spacing between navigation bar and search bar
+                   
                     Spacer()
                         .frame(height: 10)
                     
-                    // Search bar
+                  
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.white.opacity(0.7))
@@ -105,7 +105,7 @@ struct UrbexesView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 10)
                     
-                    // Active filter indicator with divider line
+                   
                     VStack(spacing: 4) {
                         HStack {
                             Text("Sorting: \(sortOption.rawValue)")
@@ -115,7 +115,7 @@ struct UrbexesView: View {
                             Spacer()
                         }
                         
-                        // Adding divider line to better separate from grid content
+                    
                         Divider()
                             .background(Color.white.opacity(0.3))
                             .padding(.top, 4)
