@@ -1,0 +1,53 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace
+*.xcuserdata/
+*.xcuserstate
+*.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+
+# SwiftPM (Swift Package Manager)
+.build/
+Package.resolved
+
+# Firebase & API keys
+GoogleService-Info.plist
+Secrets.plist
+*.xcconfig
+*.env
+
+
+# IDE/editor config
+.DS_Store
+.idea/
+.vscode/
+
+# User data / trash
+*.moc
+*.swp
+*.log
+
+# Crashlytics
+*.dSYM.zip
+*.dSYM
+
+# Testing
+*.gcno
+*.profraw
+*.profdata
+
+# SwiftLint
+.swiftlint.yml
+.swiftlint.tmp
+
+# Preview Content 
+Preview\ Content/
+
+# Assets you want to keep local only
+*.xcassets/private/
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots
+fastlane/test_output
