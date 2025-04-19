@@ -21,9 +21,11 @@ struct Urbex: Codable, Identifiable, Hashable {
     var name: String
     var likes: [String] = []
     var dislikes: [String] = []
+    var activeVotes: [String] = []
+    var inactiveVotes: [String] = []
     
     
-  
+    
     
     
 }

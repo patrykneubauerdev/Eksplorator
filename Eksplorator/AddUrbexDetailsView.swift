@@ -39,7 +39,7 @@ struct AddUrbexDetailsView: View {
     @State private var contentWarningMessage = ""
     @State private var dailyLimitReached = false
     
-    private let MAX_DAILY_URBEX_LIMIT = 5
+    private let MAX_DAILY_URBEX_LIMIT = 100
     
     private var db = Firestore.firestore()
     
@@ -486,7 +486,9 @@ struct AddUrbexDetailsView: View {
                     longitude: lon,
                     name: name,
                     likes: [],
-                    dislikes: []
+                    dislikes: [],
+                    activeVotes: [],
+                    inactiveVotes: []
                 )
                 
                 db.collection("urbexes").document(urbexID).setData([
@@ -500,7 +502,9 @@ struct AddUrbexDetailsView: View {
                     "name": urbex.name,
                     "addedDate": urbex.addedDate,
                     "likes": [],
-                    "dislikes": []
+                    "dislikes": [],
+                    "activeVotes": [],
+                    "inactiveVotes": []
                     
                 ]) { error in
                     if let error = error {

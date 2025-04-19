@@ -193,6 +193,7 @@ struct FavoritesView: View {
                     }
                 }
             }
+            .scrollIndicators(.hidden)
             .navigationTitle("Favorites")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.darkest, for: .navigationBar)

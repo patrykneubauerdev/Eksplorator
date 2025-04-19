@@ -125,6 +125,8 @@ class FirestoreService: ObservableObject {
          return urbexes
      }
     
+    
+    
     func fetchUrbexByID(_ urbexID: String) async -> Urbex? {
         let docRef = db.collection("urbexes").document(urbexID)
         do {
@@ -140,6 +142,10 @@ class FirestoreService: ObservableObject {
             return nil
         }
     }
+    
+    
+   
+    
     
     func fetchUrbexesForUser() async {
         isLoading = true 
@@ -246,6 +252,78 @@ class FirestoreService: ObservableObject {
             }
         } catch {
             print("Error toggling dislike: \(error)")
+        }
+    }
+    
+    
+    func toggleActiveStatus(for urbexID: String, userID: String) async {
+        let docRef = db.collection("urbexes").document(urbexID)
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                db.runTransaction({ (transaction, errorPointer) -> Any? in
+                    do {
+                        let snapshot = try transaction.getDocument(docRef) as DocumentSnapshot
+                        var urbex = try snapshot.data(as: Urbex.self)
+
+                        if urbex.activeVotes.contains(userID) {
+                            urbex.activeVotes.removeAll { $0 == userID }
+                        } else {
+                            urbex.activeVotes.append(userID)
+                            urbex.inactiveVotes.removeAll { $0 == userID }
+                        }
+
+                        try transaction.setData(from: urbex, forDocument: docRef)
+                        return nil
+                    } catch {
+                        errorPointer?.pointee = error as NSError
+                        return nil
+                    }
+                }) { (_, error) in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        } catch {
+            print("Error toggling active status: \(error)")
+        }
+    }
+    
+    
+    func toggleInactiveStatus(for urbexID: String, userID: String) async {
+        let docRef = db.collection("urbexes").document(urbexID)
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                db.runTransaction({ (transaction, errorPointer) -> Any? in
+                    do {
+                        let snapshot = try transaction.getDocument(docRef) as DocumentSnapshot
+                        var urbex = try snapshot.data(as: Urbex.self)
+
+                        if urbex.inactiveVotes.contains(userID) {
+                            urbex.inactiveVotes.removeAll { $0 == userID }
+                        } else {
+                            urbex.inactiveVotes.append(userID)
+                            urbex.activeVotes.removeAll { $0 == userID }
+                        }
+
+                        try transaction.setData(from: urbex, forDocument: docRef)
+                        return nil
+                    } catch {
+                        errorPointer?.pointee = error as NSError
+                        return nil
+                    }
+                }) { (_, error) in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        } catch {
+            print("Error toggling inactive status: \(error)")
         }
     }
 

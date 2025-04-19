@@ -23,8 +23,19 @@ struct UrbexDetailsView: View {
     @State private var showAlreadyReportedAlert = false
     @State private var isAddedByAdmin: Bool = false
     @State private var addedByUsername: String = ""
+    @State private var hasMarkedActive: Bool = false
+    @State private var hasMarkedInactive: Bool = false
     
     private let firestoreService = FirestoreService()
+    
+    
+    var totalStatusVotes: Int {
+          urbex.activeVotes.count + urbex.inactiveVotes.count
+      }
+    
+    var activePercentage: CGFloat {
+           totalStatusVotes > 0 ? CGFloat(urbex.activeVotes.count) / CGFloat(totalStatusVotes) : 0.5
+       }
 
     var totalVotes: Int {
         urbex.likes.count + urbex.dislikes.count
@@ -209,6 +220,96 @@ struct UrbexDetailsView: View {
                     
                     
                     
+                    VStack(spacing: 15) {
+                             Text("Status:")
+                                 .font(.headline)
+                                 .foregroundColor(.white)
+                                 .padding(.top, 5)
+                             
+                             HStack(spacing: 30) {
+                                 Button(action: {
+                                     Task {
+                                         guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
+                                         await firestoreService.toggleActiveStatus(for: urbexID, userID: userID)
+                                         await updateUrbexData()
+                                         hasMarkedActive.toggle()
+                                         if hasMarkedActive { hasMarkedInactive = false }
+                                     }
+                                 }) {
+                                     VStack {
+                                         Image(systemName: hasMarkedActive ? "checkmark.circle.fill" : "checkmark.circle")
+                                             .font(.title2)
+                                             .foregroundColor(hasMarkedActive ? .green : .white)
+                                         Text("\(urbex.activeVotes.count)")
+                                             .font(.caption)
+                                             .monospacedDigit()
+                                         Text("Active")
+                                             .font(.caption)
+                                             .foregroundColor(.white.opacity(0.8))
+                                     }
+                                 }
+                                 
+                                 Rectangle()
+                                     .fill(Color.white.opacity(0.3))
+                                     .frame(width: 1, height: 30)
+                                 
+                                 Button(action: {
+                                     Task {
+                                         guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
+                                         await firestoreService.toggleInactiveStatus(for: urbexID, userID: userID)
+                                         await updateUrbexData()
+                                         hasMarkedInactive.toggle()
+                                         if hasMarkedInactive { hasMarkedActive = false }
+                                     }
+                                 }) {
+                                     VStack {
+                                         Image(systemName: hasMarkedInactive ? "xmark.circle.fill" : "xmark.circle")
+                                             .font(.title2)
+                                             .foregroundColor(hasMarkedInactive ? .red : .white)
+                                         Text("\(urbex.inactiveVotes.count)")
+                                             .font(.caption)
+                                             .monospacedDigit()
+                                         Text("Inactive")
+                                             .font(.caption)
+                                             .foregroundColor(.white.opacity(0.8))
+                                     }
+                                 }
+                             }
+                             
+                             VStack(spacing: 5) {
+                                 ZStack(alignment: .leading) {
+                                     Rectangle()
+                                         .frame(width: 250, height: 10)
+                                         .foregroundColor(.red)
+                                         .clipShape(RoundedRectangle(cornerRadius: 5))
+                                     
+                                     Rectangle()
+                                         .frame(width: 250 * activePercentage, height: 10)
+                                         .foregroundColor(.green)
+                                         .clipShape(RoundedRectangle(cornerRadius: 5))
+                                         .animation(.easeInOut, value: activePercentage)
+                                 }
+                                 
+                                 Text("\(Int(activePercentage * 100))% consider this location active")
+                                     .font(.caption)
+                                     .foregroundColor(.white.opacity(0.8))
+                             }
+                         }
+                         .padding()
+                         .frame(maxWidth: .infinity)
+                         .background(
+                             RoundedRectangle(cornerRadius: 7)
+                                 .fill(Color.greyish)
+                         )
+                         .overlay(
+                             RoundedRectangle(cornerRadius: 7)
+                                 .stroke(.white.opacity(0.7), lineWidth: 1)
+                         )
+                         .padding(.horizontal)
+                    
+                    
+                    
+                    
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Details:")
                             .font(.headline)
@@ -314,9 +415,11 @@ struct UrbexDetailsView: View {
             if let userID = authViewModel.currentUser?.id {
                 hasLiked = urbex.likes.contains(userID)
                 hasDisliked = urbex.dislikes.contains(userID)
+                hasMarkedActive = urbex.activeVotes.contains(userID)
+                hasMarkedInactive = urbex.inactiveVotes.contains(userID)
             }
             
-          
+            
             fetchAddedByUserDetails()
         }
         .toolbar {

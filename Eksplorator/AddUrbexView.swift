@@ -232,12 +232,23 @@ struct AddUrbexView: View {
                                 
                                
                             }
+                    
+                    
                     .listStyle(.grouped)
                     .foregroundStyle(.white)
                     .scrollContentBackground(.hidden)
                     .refreshable {
                         await firestoreService.fetchUrbexesForUser()
                     }
+                    
+                    .safeAreaInset(edge: .bottom) {
+                        
+                        Rectangle()
+                            .fill(Color.clear)
+                            .frame(height: 70) 
+                    }
+                    
+                    
                 }
                 
                 VStack {
@@ -265,6 +276,7 @@ struct AddUrbexView: View {
                 }
                 
             }
+            .scrollIndicators(.hidden)
             .navigationTitle("My Urbexes")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.darkest, for: .navigationBar)
