@@ -21,6 +21,8 @@ struct UrbexDetailsView: View {
     @State private var showReportSuccessAlert = false
     @State private var showReportSheet = false
     @State private var showAlreadyReportedAlert = false
+    @State private var isAddedByAdmin: Bool = false
+    @State private var addedByUsername: String = ""
     
     private let firestoreService = FirestoreService()
 
@@ -42,7 +44,6 @@ struct UrbexDetailsView: View {
                             switch phase {
                             case .empty:
                                 ShimmerEffectView()
-                                    .frame(maxWidth: .infinity)
                                     .frame(height: 300)
                                     .clipShape(RoundedRectangle(cornerRadius: 7))
                                     .overlay(
@@ -51,18 +52,21 @@ struct UrbexDetailsView: View {
                                     )
                                     .padding(.horizontal)
                             case .success(let image):
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 300)
-                                    .clipShape(RoundedRectangle(cornerRadius: 7))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 7)
-                                            .stroke(.white.opacity(0.7), lineWidth: 1)
-                                    )
-                                    .padding(.horizontal)
-                                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
-                                    .animation(.spring(duration: 0.5), value: image)
+                                GeometryReader { geo in
+                                    image.resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: geo.size.width, height: 300)
+                                        .clipped()
+                                        .clipShape(RoundedRectangle(cornerRadius: 7))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 7)
+                                                .stroke(.white.opacity(0.7), lineWidth: 1)
+                                        )
+                                        .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                                        .animation(.spring(duration: 0.5), value: image)
+                                }
+                                .frame(height: 300)
+                                .padding(.horizontal)
                             case .failure(_):
                                 ZStack {
                                     Rectangle()
@@ -311,6 +315,9 @@ struct UrbexDetailsView: View {
                 hasLiked = urbex.likes.contains(userID)
                 hasDisliked = urbex.dislikes.contains(userID)
             }
+            
+          
+            fetchAddedByUserDetails()
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -349,7 +356,17 @@ struct UrbexDetailsView: View {
                 .frame(width: 24)
             Text(title + ":")
                 .foregroundColor(.white.opacity(0.7))
-            Text(value)
+            
+         
+            if title == "Added by" && isAddedByAdmin {
+                Text(addedByUsername.isEmpty ? value : addedByUsername)
+                    .foregroundColor(.purple)
+                
+                Image(systemName: "checkmark.seal.fill")
+                    .foregroundColor(.purple)
+            } else {
+                Text(value)
+            }
         }
     }
     
@@ -373,6 +390,31 @@ struct UrbexDetailsView: View {
         let urlString = "https://www.google.com/maps?q=\(latitude),\(longitude)"
         return URL(string: urlString)!
     }
+    
+    
+    private func fetchAddedByUserDetails() {
+        let db = Firestore.firestore()
+      
+        db.collection("users")
+            .whereField("username", isEqualTo: urbex.addedBy)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error fetching user details: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let userDoc = snapshot?.documents.first {
+                    if let isAdmin = userDoc.data()["isAdmin"] as? Bool {
+                        self.isAddedByAdmin = isAdmin
+                    }
+                    
+                    if let username = userDoc.data()["username"] as? String {
+                        self.addedByUsername = username
+                    }
+                }
+            }
+    }
+    
 
     private func reportUrbex(reason: String) {
         guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }

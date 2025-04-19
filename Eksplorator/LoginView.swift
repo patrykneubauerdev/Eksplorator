@@ -32,7 +32,7 @@ struct LoginView: View {
                                hideKeyboard()
                            }
                 VStack {
-                    Image(.example)
+                    Image(.eksploratorLogo)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 100, height: 120)

@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "anonymous-mask.png",
+      "filename" : "png 512.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "png 512@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "png 512@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

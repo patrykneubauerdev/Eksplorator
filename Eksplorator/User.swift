@@ -13,6 +13,7 @@ struct User: Identifiable, Codable {
     let email: String
     var favoriteUrbexes: [String]
     var urbexes: [String]
+    var isAdmin: Bool = false
 
     var initials: String {
         let formatter = PersonNameComponentsFormatter()
@@ -31,6 +32,7 @@ extension User {
         username: "Patryk Neubauer",
         email: "test@gmail.com",
         favoriteUrbexes: [],
-        urbexes: []
+        urbexes: [],
+        isAdmin: true
     )
 }
