@@ -25,6 +25,8 @@ struct UrbexDetailsView: View {
     @State private var addedByUsername: String = ""
     @State private var hasMarkedActive: Bool = false
     @State private var hasMarkedInactive: Bool = false
+    @State private var showLoginAlert = false
+    @State private var loginAlertMessage = ""
     
     private let firestoreService = FirestoreService()
     
@@ -108,11 +110,16 @@ struct UrbexDetailsView: View {
                     
                     HStack(spacing: 10) {
                         Button(action: {
-                            Task {
-                                guard let urbexID = urbex.id else { return }
-                                await authViewModel.toggleFavoriteUrbex(urbexID: urbexID)
-                                isFavorite.toggle()
-                                await firestoreService.fetchUrbexes()
+                            if authViewModel.currentUser?.isGuest ?? false {
+                                loginAlertMessage = "You need to be signed in to add urbexes to favorites"
+                                showLoginAlert = true
+                            } else {
+                                Task {
+                                    guard let urbexID = urbex.id else { return }
+                                    await authViewModel.toggleFavoriteUrbex(urbexID: urbexID)
+                                    isFavorite.toggle()
+                                    await firestoreService.fetchUrbexes()
+                                }
                             }
                         }) {
                             HStack {
@@ -135,21 +142,23 @@ struct UrbexDetailsView: View {
                                     .stroke(.white.opacity(0.7), lineWidth: 1)
                             )
                         }
-                        
-                        
-                     
                     }
                     .padding(.horizontal)
                     
                     VStack(spacing: 15) {
                         HStack(spacing: 30) {
                             Button(action: {
-                                Task {
-                                    guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
-                                    await firestoreService.toggleLike(for: urbexID, userID: userID)
-                                    await updateUrbexData()
-                                    hasLiked.toggle()
-                                    if hasLiked { hasDisliked = false }
+                                if authViewModel.currentUser?.isGuest ?? false {
+                                    loginAlertMessage = "You need to be signed in to like urbexes"
+                                    showLoginAlert = true
+                                } else {
+                                    Task {
+                                        guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
+                                        await firestoreService.toggleLike(for: urbexID, userID: userID)
+                                        await updateUrbexData()
+                                        hasLiked.toggle()
+                                        if hasLiked { hasDisliked = false }
+                                    }
                                 }
                             }) {
                                 VStack {
@@ -167,12 +176,17 @@ struct UrbexDetailsView: View {
                                 .frame(width: 1, height: 30)
                             
                             Button(action: {
-                                Task {
-                                    guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
-                                    await firestoreService.toggleDislike(for: urbexID, userID: userID)
-                                    await updateUrbexData()
-                                    hasDisliked.toggle()
-                                    if hasDisliked { hasLiked = false }
+                                if authViewModel.currentUser?.isGuest ?? false {
+                                    loginAlertMessage = "You need to be signed in to dislike urbexes"
+                                    showLoginAlert = true
+                                } else {
+                                    Task {
+                                        guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
+                                        await firestoreService.toggleDislike(for: urbexID, userID: userID)
+                                        await updateUrbexData()
+                                        hasDisliked.toggle()
+                                        if hasDisliked { hasLiked = false }
+                                    }
                                 }
                             }) {
                                 VStack {
@@ -228,12 +242,17 @@ struct UrbexDetailsView: View {
                              
                              HStack(spacing: 30) {
                                  Button(action: {
-                                     Task {
-                                         guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
-                                         await firestoreService.toggleActiveStatus(for: urbexID, userID: userID)
-                                         await updateUrbexData()
-                                         hasMarkedActive.toggle()
-                                         if hasMarkedActive { hasMarkedInactive = false }
+                                     if authViewModel.currentUser?.isGuest ?? false {
+                                         loginAlertMessage = "You need to be signed in to mark urbex status"
+                                         showLoginAlert = true
+                                     } else {
+                                         Task {
+                                             guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
+                                             await firestoreService.toggleActiveStatus(for: urbexID, userID: userID)
+                                             await updateUrbexData()
+                                             hasMarkedActive.toggle()
+                                             if hasMarkedActive { hasMarkedInactive = false }
+                                         }
                                      }
                                  }) {
                                      VStack {
@@ -254,12 +273,17 @@ struct UrbexDetailsView: View {
                                      .frame(width: 1, height: 30)
                                  
                                  Button(action: {
-                                     Task {
-                                         guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
-                                         await firestoreService.toggleInactiveStatus(for: urbexID, userID: userID)
-                                         await updateUrbexData()
-                                         hasMarkedInactive.toggle()
-                                         if hasMarkedInactive { hasMarkedActive = false }
+                                     if authViewModel.currentUser?.isGuest ?? false {
+                                         loginAlertMessage = "You need to be signed in to mark urbex status"
+                                         showLoginAlert = true
+                                     } else {
+                                         Task {
+                                             guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
+                                             await firestoreService.toggleInactiveStatus(for: urbexID, userID: userID)
+                                             await updateUrbexData()
+                                             hasMarkedInactive.toggle()
+                                             if hasMarkedInactive { hasMarkedActive = false }
+                                         }
                                      }
                                  }) {
                                      VStack {
@@ -398,6 +422,14 @@ struct UrbexDetailsView: View {
             }
             .scrollIndicators(.hidden)
         }
+        .alert("Sign In Required", isPresented: $showLoginAlert) {
+            Button("Sign In", role: .none) {
+                authViewModel.signOut()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(loginAlertMessage)
+        }
         .alert("Thank you!", isPresented: $showReportSuccessAlert, actions: {
                    Button("OK", role: .cancel) { }
                }, message: {
@@ -418,7 +450,6 @@ struct UrbexDetailsView: View {
                 hasMarkedActive = urbex.activeVotes.contains(userID)
                 hasMarkedInactive = urbex.inactiveVotes.contains(userID)
             }
-            
             
             fetchAddedByUserDetails()
         }
@@ -448,9 +479,6 @@ struct UrbexDetailsView: View {
                 }
             }
         }
-        
-       
-       
     }
     
     private func DetailRow(icon: String, title: String, value: String) -> some View {
@@ -520,11 +548,16 @@ struct UrbexDetailsView: View {
     
 
     private func reportUrbex(reason: String) {
-        guard let urbexID = urbex.id, let userID = authViewModel.currentUser?.id else { return }
-
+        guard let urbexID = urbex.id else { return }
+        
+        
+        let reporterID = authViewModel.currentUser?.isGuest ?? false
+            ? "guest_" + DeviceIdentifier.getDeviceIdentifier()
+            : authViewModel.currentUser?.id ?? ""
+        
         Firestore.firestore().collection("reports")
             .whereField("urbexID", isEqualTo: urbexID)
-            .whereField("reportedBy", isEqualTo: userID)
+            .whereField("reportedBy", isEqualTo: reporterID)
             .getDocuments { snapshot, error in
                 if let error = error {
                     print("Error checking report: \(error.localizedDescription)")
@@ -538,9 +571,10 @@ struct UrbexDetailsView: View {
 
                 let reportData: [String: Any] = [
                     "urbexID": urbexID,
-                    "reportedBy": userID,
+                    "reportedBy": reporterID,
                     "reason": reason,
-                    "timestamp": Timestamp()
+                    "timestamp": Timestamp(),
+                    "isGuestReport": authViewModel.currentUser?.isGuest ?? false
                 ]
 
                 Firestore.firestore().collection("reports").addDocument(data: reportData) { error in

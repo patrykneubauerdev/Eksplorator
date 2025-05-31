@@ -15,6 +15,8 @@ struct LoginView: View {
     @State private var alertMessage: String?
     @State private var showAlert = false
     
+    @Environment(\.dismiss) var dismiss
+    
     @EnvironmentObject var viewModel: AuthViewModel
     
     @FocusState private var focusedField: Field?
@@ -29,9 +31,17 @@ struct LoginView: View {
                 Color(.semiDark)
                     .ignoresSafeArea()
                     .onTapGesture {
-                               hideKeyboard()
-                           }
+                        hideKeyboard()
+                    }
+                
+               
                 VStack {
+                    
+                    
+                    Spacer()
+                        .frame(height: 90)
+                    
+                    
                     Image(.eksploratorLogo)
                         .resizable()
                         .scaledToFill()
@@ -57,7 +67,7 @@ struct LoginView: View {
                             isSecureField: true,
                             submitLabel: .done
                         ) {
-                            focusedField = nil 
+                            focusedField = nil
                         }
                         .focused($focusedField, equals: .password)
                         
@@ -101,6 +111,23 @@ struct LoginView: View {
                     .clipShape(.buttonBorder)
                     .padding(.top, 25)
                     
+                    Button {
+                        print("Guest button tapped")
+                        viewModel.continueAsGuest()
+                        print("Dismissing login view")
+                    } label: {
+                        HStack {
+                            Text("Continue as Guest")
+                                .fontWeight(.semibold)
+                            Image(systemName: "person.fill.checkmark")
+                        }
+                        .foregroundStyle(.black)
+                        .frame(width: 320, height: 50)
+                    }
+                    .background(.white)
+                    .clipShape(.buttonBorder)
+                    .padding(.top, 10)
+                    
                     Spacer()
                     
                     NavigationLink {
@@ -116,6 +143,7 @@ struct LoginView: View {
                         .foregroundStyle(.white)
                     }
                 }
+                
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Authentication Failed"),

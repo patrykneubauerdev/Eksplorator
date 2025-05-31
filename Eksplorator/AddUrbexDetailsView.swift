@@ -39,7 +39,7 @@ struct AddUrbexDetailsView: View {
     @State private var contentWarningMessage = ""
     @State private var dailyLimitReached = false
     
-    private let MAX_DAILY_URBEX_LIMIT = 100
+    private let MAX_DAILY_URBEX_LIMIT = 5
     
     private var db = Firestore.firestore()
     

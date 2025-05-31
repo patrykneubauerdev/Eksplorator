@@ -19,6 +19,7 @@ struct RegistrationView: View {
     @State private var showUsernameRules = false
     @State private var acceptedTerms = false
     @State private var showTermsSheet = false
+    @State private var isLoading = false
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: AuthViewModel
     
@@ -197,6 +198,10 @@ struct RegistrationView: View {
                 .padding(.top, 5)
                 
                 Button {
+                    guard !isLoading else { return }
+                    isLoading = true
+                    focusedField = nil
+                    
                     Task {
                         isUsernameAllowed(username: username) { isAllowed, message in
                             if isAllowed {
@@ -207,28 +212,42 @@ struct RegistrationView: View {
                                         if isUsernameTaken {
                                             errorMessage = "This username is already taken. Please choose another one."
                                             showAlert = true
+                                            isLoading = false
                                         } else {
                                             try await viewModel.createUserWithDeviceLimit(withEmail: email, password: password, username: username)
+                                          
                                         }
                                     } catch AuthViewModel.AuthError.deviceLimitReached {
                                         errorMessage = "Maximum number of accounts (3) has been reached for this device. Please use an existing account."
                                         showAlert = true
+                                        isLoading = false
                                     } catch {
                                         errorMessage = "An unexpected error occurred. Please try again."
                                         showAlert = true
+                                        isLoading = false
                                     }
                                 }
                             } else {
                                 errorMessage = message
                                 showAlert = true
+                                isLoading = false
                             }
                         }
                     }
                 } label: {
                     HStack {
-                        Text("SIGN UP")
+                        if isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                                .padding(.trailing, 10)
+                        }
+                        
+                        Text(isLoading ? "SIGNING UP..." : "SIGN UP")
                             .fontWeight(.semibold)
-                        Image(systemName: "arrow.right")
+                        
+                        if !isLoading {
+                            Image(systemName: "arrow.right")
+                        }
                     }
                     .foregroundStyle(.black)
                     .frame(width: 320, height: 50)
@@ -239,8 +258,8 @@ struct RegistrationView: View {
                     Text(error)
                 }
                 .background(.white)
-                .disabled(!formIsValid)
-                .opacity(formIsValid ? 1.0 : 0.5)
+                .disabled(!formIsValid || isLoading)
+                .opacity((formIsValid && !isLoading) ? 1.0 : (isLoading ? 0.8 : 0.5))
                 .clipShape(.buttonBorder)
                 .padding(.top, 25)
                 

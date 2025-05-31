@@ -14,6 +14,7 @@ struct User: Identifiable, Codable {
     var favoriteUrbexes: [String]
     var urbexes: [String]
     var isAdmin: Bool = false
+    var isGuest: Bool = false
 
     var initials: String {
         let formatter = PersonNameComponentsFormatter()
@@ -25,7 +26,6 @@ struct User: Identifiable, Codable {
     }
 }
 
-
 extension User {
     static var mockUser = User(
         id: NSUUID().uuidString,
@@ -33,6 +33,17 @@ extension User {
         email: "test@gmail.com",
         favoriteUrbexes: [],
         urbexes: [],
-        isAdmin: true
+        isAdmin: true,
+        isGuest: false
+    )
+    
+    static var guestUser = User(
+        id: "guest",
+        username: "Guest",
+        email: "",
+        favoriteUrbexes: [],
+        urbexes: [],
+        isAdmin: false,
+        isGuest: true
     )
 }

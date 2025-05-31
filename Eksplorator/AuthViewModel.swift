@@ -3,7 +3,7 @@
 //  Eksplorator
 //
 //  Created by Patryk Neubauer on 30/01/2025.
-//  Copyright © Eksplorator 2025 Patryk Neubauer. All rights reserved.
+//  Copyright © 2025 Patryk Neubauer. All rights reserved.
 
 import Foundation
 import Firebase
@@ -19,35 +19,46 @@ class AuthViewModel: ObservableObject {
     @Published var userSession: FirebaseAuth.User?
     @Published var currentUser: User?
     @Published var dailyUrbexAdditions: [String: Int] = [:]
-    private var db = Firestore.firestore()
+    @Published var isGuestMode: Bool = false
     
+    private var db = Firestore.firestore()
     private var authStateListenerHandle: AuthStateDidChangeListenerHandle?
     private let firestoreService = FirestoreService()
     
     init() {
-         self.userSession = Auth.auth().currentUser
+        self.userSession = Auth.auth().currentUser
          
-         authStateListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
-             DispatchQueue.main.async {
-                 self?.userSession = user
-                 if user == nil {
-                     self?.currentUser = nil
-                 } else {
-                     self?.checkUserExistence(userId: user?.uid)
-                 }
-             }
-         }
+        authStateListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            DispatchQueue.main.async {
+                self?.userSession = user
+                if user == nil && !(self?.isGuestMode ?? false) {
+                    self?.currentUser = nil
+                } else {
+                    self?.checkUserExistence(userId: user?.uid)
+                }
+            }
+        }
          
-         Task {
-             await fetchUser()
-         }
-     }
+        Task {
+            await fetchUser()
+        }
+    }
     
     func signIn(withEmail email: String, password: String) async throws {
         do {
             let result = try await Auth.auth().signIn(withEmail: email, password: password)
             self.userSession = result.user
             await fetchUser()
+            
+            Task {
+                     await firestoreService.fetchUrbexesForUser()
+                     try? await Task.sleep(nanoseconds: 500_000_000) 
+                     await firestoreService.fetchUrbexesForUser()
+                 }
+            
+            
+            
+            
         } catch let error as NSError {
             throw mapAuthError(error)
         }
@@ -63,13 +74,25 @@ class AuthViewModel: ObservableObject {
         db.collection("users").document(userId).getDocument { [weak self] document, error in
             if let error = error {
                 print("Error during user verification: \(error.localizedDescription)")
+              
+                try? Auth.auth().signOut()
                 self?.userSession = nil
                 self?.currentUser = nil
             } else if document?.exists == false {
              
+                print("User document doesn't exist anymore, signing out")
+                try? Auth.auth().signOut()
                 self?.userSession = nil
                 self?.currentUser = nil
             }
+        }
+    }
+    
+    
+    func verifyUserExists() {
+        
+        if let userId = Auth.auth().currentUser?.uid, !isGuestMode {
+            checkUserExistence(userId: userId)
         }
     }
     
@@ -137,7 +160,7 @@ class AuthViewModel: ObservableObject {
              let snapshot = try await docRef.getDocument()
              
              if let data = snapshot.data(), let count = data["accountCount"] as? Int {
-                 // Increment account count
+                
                  try await docRef.updateData(["accountCount": count + 1])
              } else {
                
@@ -234,15 +257,42 @@ class AuthViewModel: ObservableObject {
             
             self.dailyUrbexAdditions = dailyAdditions
             await fetchUser()
+            
+            Task {
+                await firestoreService.fetchUrbexesForUser()
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                await firestoreService.fetchUrbexesForUser()
+            }
+            
+            
         } catch let error as NSError {
             throw mapAuthError(error)
         }
+    }
+    
+    func continueAsGuest() {
+      
+        self.isGuestMode = true
+        
+        let guestUser = User(
+            id: "guest",
+            username: "Guest",
+            email: "",
+            favoriteUrbexes: [],
+            urbexes: [],
+            isAdmin: false,
+            isGuest: true
+        )
+        
+        self.currentUser = guestUser
+       
     }
     
     func signOut() {
         try? Auth.auth().signOut()
         self.userSession = nil
         self.currentUser = nil
+        self.isGuestMode = false
     }
     
     func addUrbexToUser(urbex: Urbex) {
@@ -278,20 +328,42 @@ class AuthViewModel: ObservableObject {
     }
     
     func reauthenticateAndDeleteUser(password: String) async throws {
-        guard let user = Auth.auth().currentUser, let email = user.email else { return }
+            guard let user = Auth.auth().currentUser, let email = user.email else {
+                print("No current user or email to delete")
+                return
+            }
 
-        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+            let credential = EmailAuthProvider.credential(withEmail: email, password: password)
 
-        do {
-            try await user.reauthenticate(with: credential)
-            try await Firestore.firestore().collection("users").document(user.uid).delete()
-            try await user.delete()
-            
-           
-        } catch {
-            throw AuthError.invalidCredentials
+            do {
+               
+                print("Starting reauthentication process...")
+                try await user.reauthenticate(with: credential)
+                print("Reauthentication successful")
+                
+              
+                print("Deleting user document from Firestore...")
+                try await Firestore.firestore().collection("users").document(user.uid).delete()
+                print("User document deleted from Firestore")
+                
+              
+                print("Deleting user from Authentication...")
+                try await user.delete()
+                print("User deleted from Authentication")
+                
+               
+                DispatchQueue.main.async {
+                    self.userSession = nil
+                    self.currentUser = nil
+                    self.isGuestMode = false
+                }
+                
+                print("Account deletion completed successfully")
+            } catch {
+                print("Error during account deletion: \(error.localizedDescription)")
+                throw AuthError.invalidCredentials
+            }
         }
-    }
     
     func updatePassword(currentPassword: String, newPassword: String) async throws {
         guard let user = Auth.auth().currentUser, let email = user.email else { return }
@@ -372,8 +444,4 @@ class AuthViewModel: ObservableObject {
                 }
             }
         }
-    
-    
-    }
-
-
+}

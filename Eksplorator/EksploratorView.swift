@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  EksploratorView.swift
 //  Eksplorator
 //
 //  Created by Patryk Neubauer on 18/01/2025.
@@ -19,7 +19,7 @@ struct EksploratorView: View {
     @State private var selectedTab: NavigationTabs = .urbexes
     
     var body: some View {
-        if viewModel.userSession != nil {
+        if viewModel.userSession != nil || viewModel.isGuestMode {
             TabView(selection: $selectedTab) {
                 Tab("Urbexes", systemImage: "house.fill", value: .urbexes) {
                     UrbexesView(selectedTab: $selectedTab)
@@ -46,6 +46,15 @@ struct EksploratorView: View {
                         .environmentObject(viewModel)
                 }
             }
+            
+            
+            .onAppear {
+                viewModel.verifyUserExists()
+            }
+            .onChange(of: selectedTab) { oldValue, newValue in
+                viewModel.verifyUserExists()
+            }
+            
             
         } else {
             LoginView()
