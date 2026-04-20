@@ -52,7 +52,7 @@ The login and registration flow was built to meet App Store review requirements 
 - Password requires a minimum of **12 characters**, at least one uppercase letter, and one special character
 - Users must accept **Terms & Conditions** before proceeding
 
-**Password recovery** works via Firebase's email reset flow — users get a reset link sent to their registered address.
+**Password recovery** works via Firebase's email reset flow - users get a reset link sent to their registered address.
 
 ---
 
