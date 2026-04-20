@@ -1,4 +1,4 @@
-<h1 align="left"><img src="eksplorator-assets/eksplorator-icon.png" width="48" valign="middle"> Eksplorator</h1>
+<h1 align="left"><img src="eksplorator-repo-assets/eksplorator-icon-repo.png" width="48" valign="middle"> Eksplorator</h1>
 
 > **Urbex discovery app for iOS** — find, share, and explore abandoned places around the world. Built entirely in Swift, powered by Firebase, and protected by AI-driven content moderation.
 
@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="#">
-    <img src="eksplorator-assets/appstore-badge.png" width="160" alt="Download on the App Store">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" width="160" alt="Download on the App Store">
   </a>
 </p>
 
@@ -73,7 +73,7 @@ Keeping a UGC app clean is hard. Eksplorator uses a multi-layer approach:
 ### 🔐 Authentication
 
 <p align="center">
-<img src="eksplorator-assets/mockupEksp.png" width="250" title="Login screen">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-assets/mockupEksp.png" width="250" title="Create account">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-assets/mockupEksp.png" width="250" title="Guest mode">
+<img src="eksplorator-repo-assets/iphone-screen-eksplorator-01.png" width="250" title="Login screen">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-repo-assets/iphone-screen-eksplorator-02.png" width="250" title="Create account">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-repo-assets/iphone-screen-eksplorator-03.png" width="250" title="Guest mode">
 </p>
 
 | Login screen | Create account | Guest mode |
@@ -85,7 +85,7 @@ Keeping a UGC app clean is hard. Eksplorator uses a multi-layer approach:
 ### 🏚️ Browsing & location details
 
 <p align="center">
-<img src="eksplorator-assets/mockupEksp.png" width="250" title="Urbexes tab">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-assets/mockupEksp.png" width="250" title="Location detail – part 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-assets/mockupEksp.png" width="250" title="Location detail – part 2">
+<img src="eksplorator-repo-assets/iphone-screen-eksplorator-04.png" width="250" title="Urbexes tab">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-repo-assets/iphone-screen-eksplorator-05.png" width="250" title="Location detail – part 1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-repo-assets/iphone-screen-eksplorator-06.png" width="250" title="Location detail – part 2">
 </p>
 
 | Urbexes tab | Location detail | More details |
@@ -97,7 +97,7 @@ Keeping a UGC app clean is hard. Eksplorator uses a multi-layer approach:
 ### ❤️ Favourites, adding a location & profile
 
 <p align="center">
-<img src="eksplorator-assets/mockupEksp.png" width="250" title="Favourites tab">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-assets/mockupEksp.png" width="250" title="Add urbex">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-assets/mockupEksp.png" width="250" title="Profile tab">
+<img src="eksplorator-repo-assets/iphone-screen-eksplorator-07.png" width="250" title="Favourites tab">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-repo-assets/iphone-screen-eksplorator-08.png" width="250" title="Add urbex">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="eksplorator-repo-assets/iphone-screen-eksplorator-09.png" width="250" title="Profile tab">
 </p>
 
 | Favourites | Add urbex | Profile |
@@ -144,3 +144,4 @@ To build locally from source:
 ---
 
 *Thanks for stopping by! 👋*
+
