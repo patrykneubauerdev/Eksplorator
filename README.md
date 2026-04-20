@@ -8,7 +8,7 @@
 [![App Store](https://img.shields.io/badge/App_Store-0D96F6?logo=app-store&logoColor=white)](#)
 
 <p align="center">
-  <a href="[apps.apple.com/pl/app/eksplorator/id6744850338](https://apps.apple.com/pl/app/eksplorator/id6744850338)">
+  <a href="https://apps.apple.com/pl/app/eksplorator/id6744850338">
     <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" width="160" alt="Download on the App Store">
   </a>
 </p>
