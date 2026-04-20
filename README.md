@@ -122,18 +122,9 @@ Keeping a UGC app clean is hard. Eksplorator uses a multi-layer approach:
 
 ---
 
-## Running the app
+## Download the app
 
-The app is **available on the App Store** — search for **Eksplorator** or use the badge at the top of this page.
-
-To build locally from source:
-
-1. **Clone** the repository
-2. Open **`Eksplorator.xcodeproj`** in Xcode
-3. Add your own `GoogleService-Info.plist` (Firebase project) and API keys for OpenAI and Google Vision
-4. Build and run on a simulator or device running **iOS 17+**
-
-> ⚠️ You'll need your own Firebase project and API keys — the production credentials are not included in the repo.
+Eksplorator is available on the **App Store** — just search for **Eksplorator** or tap the badge at the top of this page. No setup, no API keys, no Xcode. Just download and start exploring. 🏚️
 
 ---
 
@@ -144,4 +135,3 @@ To build locally from source:
 ---
 
 *Thanks for stopping by! 👋*
-
