@@ -135,6 +135,8 @@ Eksplorator is available on the **App Store** - just search for **Eksplorator** 
 
 ✉️ [patrykneubauerdev@gmail.com](mailto:patrykneubauerdev@gmail.com)
 
+💼 [linkedin.com/in/patryk-neubauer](https://www.linkedin.com/in/patryk-neubauer)
+
 ---
 
 *Thanks for stopping by! 👋*
